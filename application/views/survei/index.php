@@ -1,7 +1,8 @@
 <div class="container-fluid">
   <?php echo $this->session->flashdata('message');?>
   <?php 
-    if(form_error('id') || form_error('catatan') || form_error('foto[]') || form_error('id_survei') || form_error('jadwal_installasi')){
+    if(form_error('id') || form_error('alat') || form_error('bahan') || form_error('catatan') || form_error('foto[]') || form_error('jadwal_installasi') ||
+      form_error('id_survei') || form_error('id_permintaan') || form_error('jadwal_installasi_admin') || form_error('teknisi')){
       echo '<div id="message" class="alert alert-danger alert-dismissible fade show" role="alert">
       <i class="far fa-times-circle"></i> Data gagal disimpan<button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
@@ -25,19 +26,31 @@
                 <div class="form-group row">
                   <input type="hidden" class="form-control form-control-sm" name="id_permintaan" id="id_permintaan">
                   <input type="hidden" class="form-control form-control-sm" name="id_survei" id="id_survei">
-                  <label for="jadwal_installasi" class="col-sm-3 col-form-label">Tanggal Installasi</label>
+                  <label for="jadwal_installasi_admin" class="col-sm-3 col-form-label">Tanggal Installasi</label>
                   <div class="col-md-9">
-                    <input type="date" class="form-control form-control-sm" id="jadwal_installasi" name="jadwal_installasi" placeholder="Tanggal Survei">
+                    <input type="date" class="form-control form-control-sm" id="jadwal_installasi_admin" name="jadwal_installasi_admin" placeholder="Tanggal Survei">
                     <?php echo form_error('id_permintaan','<small class="text-danger">','</small><br>')?>
                     <?php echo form_error('id_survei','<small class="text-danger">','</small><br>')?>
-                    <?php echo form_error('jadwal_installasi','<small class="text-danger">','</small>')?>
+                    <?php echo form_error('jadwal_installasi_admin','<small class="text-danger">','</small>')?>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="teknisi" class="col-sm-3 col-form-label">Teknisi</label>
+                  <div class="col-sm-9">
+                    <select type="text" class="form-control form-control-sm" id="teknisi" name="teknisi">
+                      <option value="">-- Pilih Teknisi --</option>
+                      <?php foreach($teknisi as $teknisi) :?>
+                        <option value="<?=$teknisi['id']?>"><?=$teknisi['fullname'].' ('.$teknisi['status_teknisi'].')'?></option>
+                      <?php endforeach?>
+                    </select> 
+                    <?php echo form_error('teknisi','<small class="text-danger">','</small>')?>
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group float-left">
-                  <button type="submit" name="simpan_jadwal_installasi" class="btn btn-primary" value="on">Simpan</button>
-                  <button type="button" class="btn btn-secondary" onCLick="unsetformJadwalInstallasi(),hideformJadwalInstallasi()">Batal</button>
+                  <button type="submit" name="simpan_jadwal_installasi" class="btn btn-sm btn-primary" value="on">Simpan</button>
+                  <button type="button" class="btn btn-sm btn-secondary" onCLick="unsetformJadwalInstallasi(),hideformJadwalInstallasi()">Batal</button>
                 </div>
               </div>
             </div>
@@ -177,7 +190,7 @@
             foreach($survei_ as $row => $data) : ?>
             <div class="card border-primary mb-3 col-md-3">
               <div class="card-header <?=($data['status_survei'] == 'Ditolak')?'bg-secondary': (($data['status_survei'] == 'Dimulai') ? 'bg-danger' :(($data['status_survei'] == 'Selesai') ? 'bg-warning' :(($data['status_survei'] == 'Diterima') ? 'bg-success' :'')));?>">
-                <h4><?=date('d F Y', strtotime($data['tgl_survei']))?></h4>
+                <h4 class="<?=($data['status_survei'] == "Cancel")?'text-danger':''?>"><?=date('d F Y', strtotime($data['tgl_survei']))?> <small><?=($data['status_survei'] == "Cancel")?'('.$data['status_survei'].')':''?></small></h4>
               </div>
               <div class="card-body">
                 <p class="card-text text-justify">
@@ -208,16 +221,14 @@
                 <?php elseif($data['status_survei'] == 'Selesai') :?>
                 <div class="row">                 
                     <?php if($this->session->userdata('level_user') == '1') : ?>
-                      <a href="#formJadwalInstallasi" class="btn btn-sm btn-primary ml-2" onCLick="setformJadwalInstallasi('<?=$data['id_survei']?>','<?=$data['id_permintaan']?>')">Acc</a>
-                      <a href="#formJadwalInstallasi" class="btn btn-sm btn-primary ml-2" onCLick="setformJadwalInstallasi('<?=$data['id_survei']?>','<?=$data['id_permintaan']?>')">Cancel</a>
+                      <a href="#formJadwalInstallasi" class="btn btn-sm btn-success ml-2" onCLick="setformJadwalInstallasi('<?=$data['id_survei']?>','<?=$data['id_permintaan']?>')">Acc</a>
+                      <a href="#" class="btn btn-sm btn-danger ml-2" onCLick="Cancel('<?=$data['id_survei']?>','<?=$data['id_permintaan']?>')">Cancel</a>
                     <?php endif?>
-                    <!-- <form action="<?=base_url('survei/hasil/'.$data['id_photos'])?>" method="post">
-                      <button type="submit" class="btn btn-sm btn-primary ml-2" name="survei" value="<?=$data['id_survei']?>">Hasil</button>
-                    </form> -->
                   <a href="<?=base_url('survei/hasil/'.$data['id_survei']).'/'.$data['id_photos']?>" class="btn btn-sm btn-primary ml-2">Hasil</a>
                 </div>
                 <?php elseif($data['status_survei'] == 'Diterima'):?>
-                  <a href="<?=base_url('survei/hasil/'.$data['id_photos'])?>" class="btn btn-sm btn-primary float-right">Lihat</a>
+                  <a href="<?=base_url('survei/hasil/'.$data['id_survei']).'/'.$data['id_photos']?>" class="btn btn-sm btn-primary float-right">Hasil</a>
+                <?php elseif($data['status_survei'] == 'Cancel'):?>
                 <?php endif?>
               </div>
             </div>

@@ -44,12 +44,22 @@ function setformJadwalInstallasi(val,val2){
   $('#formJadwalInstallasi').show('slow')
   $("[name='id_survei']").val(val)
   $("[name='id_permintaan']").val(val2)
+  $.ajax({
+    type      : "POST",
+    data      : "id="+val,
+    url       : baseurl+"survei/getDataInstallasi",
+    dataType  : "JSON",
+    success   : function(hasil){
+      $('#jadwal_installasi_admin').val(hasil[0].tgl_installasi)
+    }
+  })
 }
 
 function unsetformJadwalInstallasi(){
   $("[name='id_survei']").val('')
   $("[name='id_permintaan']").val('')
   $("[name='jadwal_installasi']").val('')
+  $('[name="teknisi"]').val('')
 }
 
 function hideformJadwalInstallasi(){
@@ -65,9 +75,9 @@ function mulaiSurvei(id){
       data:'id='+id,
       url:'survei/mulaiSurvei',
       success:function(){
-        window.location.replace('survei');
+        window.location.replace('survei')
       }
-    });
+    })
   }
 }
 
@@ -185,3 +195,18 @@ $('#hpsBhn').on('click', function(){
     }
   }
 })
+
+function Cancel(val1,val2){
+  var tanya = confirm('Apakah anda yakin akan membatalkan penjadwalan installasi?');
+  
+  if(tanya){
+    $.ajax({
+      type:'POST',
+      data:{id_survei : val1, id_permintaan : val2},
+      url:baseurl+'survei/cancel',
+      success:function(){
+        window.location.replace('survei');
+      }
+    });
+  }
+}

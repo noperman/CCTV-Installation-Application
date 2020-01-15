@@ -113,7 +113,7 @@ class Installasi extends CI_Controller {
       ]);
       $this->template->set('menu',$this->main->Menu($this->session->userdata('level_user')));
       $data['permintaan_installasi'] = $this->installasi->getAllPermintaanInstallasi();
-      $data['teknisi'] = $this->installasi->getTeknisi();
+      $data['teknisi'] = $this->main->getTeknisi();
       $this->template->load('template/base','installasi/permintaan_installasi', $data);
     }else{
       if ($this->input->post('simpan') == "on") {

@@ -161,7 +161,7 @@
             </thead>
             <tbody>
               <?php $i=1; foreach($permintaan_installasi as $row) : ?>
-              <tr>
+              <tr class="<?=($row['status'] == "Cancel")?'text-danger':''?>">
                 <td style="text-align:center;"><?=$i++?></td>
                 <td><?=date('d F Y',strtotime($row['tgl_permintaan']))?></td>
                 <td><?=$row['nama']?></td>

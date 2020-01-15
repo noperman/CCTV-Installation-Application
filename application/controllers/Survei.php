@@ -25,7 +25,8 @@ class Survei extends CI_Controller{
     }elseif($this->input->post('simpan_jadwal_installasi') == 'on'){
       $this->form_validation->set_rules('id_permintaan', 'ID Permintaan', 'required|trim');
       $this->form_validation->set_rules('id_survei', 'ID Survei', 'required|trim');
-      $this->form_validation->set_rules('jadwal_installasi', 'Jadwal installasi', 'required|trim');
+      $this->form_validation->set_rules('jadwal_installasi_admin', 'Jadwal installasi', 'required|trim');
+      $this->form_validation->set_rules('teknisi', 'Teknisi', 'required|trim');
     }
 
     if($this->form_validation->run() == FALSE){
@@ -91,6 +92,7 @@ class Survei extends CI_Controller{
         $data['survei_admin'] = $this->survei->getAllSurveiAdmin($config["per_page"], $page);
       }
       $data['master_alat'] = $this->master->getAllAlat();
+      $data['teknisi'] = $this->main->getTeknisi();
 
       $this->template->load('template/base','survei/index', $data);
     }else{
@@ -114,102 +116,115 @@ class Survei extends CI_Controller{
           $date_timestamp = strtotime($tgl_installasi);
   
           if ($date_timestamp >= $today_end) {
-            # Proses Foto
-            $foto = $_FILES['foto']['name'];
-            $files = $_FILES;
-    
-            $new_name = 'survei_'.date("Y-m-d(h-i-sa)");
-            $config['file_name'] = $new_name;
-            $config['allowed_types'] = 'gif|jpg|png|jpeg';
-            $config['max_size']      = '5120';
-            $config['upload_path']   = 'assets/images/survei';
-            $this->load->library('upload', $config);
-            
-            foreach($foto as $row => $name){
-              $_FILES['foto']['name'] = $files['foto']['name'][$row];
-              $_FILES['foto']['type'] = $files['foto']['type'][$row];
-              $_FILES['foto']['tmp_name'] = $files['foto']['tmp_name'][$row];
-              $_FILES['foto']['error'] = $files['foto']['error'][$row];
-              $_FILES['foto']['size'] = $files['foto']['size'][$row];    
-    
-              $this->upload->initialize($config);
-              $this->upload->do_upload('foto');
-              $dataInfo[] = $this->upload->data('file_name');
-            }
-    
-            $image_name = substr($dataInfo[0], 7, 22);
-    
-            $data_images = [
-              'id' => '',
-              'type' => 'Survei',
-              'name' => $image_name,
-            ];
-    
-            $this->main->insert($data_images,'images');
-            
-            $images_where = ['name' => $image_name ];
-            $image = $this->main->getWhere('images',$images_where)->result_array();
-            $image_id = $image[0]['id'];
-    
-            foreach($dataInfo as $row => $data){
-              $data_images_detail = [
-                "id_images" => $image_id,
-                "path" => "assets/images/survei/",
-                "name" => $data,
-              ];
-              $this->main->insert($data_images_detail,'images_detail');
-            }
-            # Proses Foto
+            $where_survei = ['id' => $id];
+            $survei = $this->main->getWhere('survei', $where_survei)->result_array();
+            $tgl_survei = strtotime($survei[0]['tgl_survei']);
 
-            # Proses Survei
-            $survei_where = ['id' => $id];
-            $survei_date_selesai = date('Y-m-d H:i:s');
-            $data_survei = [
-              "selesai" => $survei_date_selesai,
-              "id_photos" => $image_id,
-              "catatan" => htmlspecialchars($this->input->post('catatan', true)),
-              "status" => "Selesai",
-            ];
-            $this->main->update($survei_where,$data_survei,'survei');
-            # Proses Survei
-
-            # Proses Installasi
-            $user = $this->session->userdata('id_user');
-
-            $data = [
-              "id_user" => htmlspecialchars($user),
-              "id_survei" => htmlspecialchars($id),
-              "tgl_installasi" => htmlspecialchars($tgl_installasi),
-              "id_alat" => htmlspecialchars($this->input->post('alat')),
-              "status" => "Belum Dikerjakan"
-            ];
-            
-            $this->main->insert($data,'installasi');
-            # Proses Installasi
-            
-            # Update Bahan->id_installasi
-            $installasi = $this->main->getWhere('installasi',$bahan_where)->result_array();
-            $id_installasi = $installasi[0]['id'];
-
-            $where_survei = ["id_survei" => $id_installasi];
-            $data_bahan = ["id_installasi" => $id_installasi];
-            $this->main->update($where_survei,$data_bahan,'bahan');
-            # Update Bahan->id_installasi
-
-            # Update User OFF JOB
-            $id_user = $this->session->userdata('id_user');
-            $where_user = ['id'=>$id_user];
-            $data_user = [ "status_teknisi" => 'OFF JOB'];
-            $this->main->update($where_user,$data_user,'user');
-            # Update User OFF JOB
-
-            $this->session->set_flashdata('message', '<div id="message" class="alert alert-success alert-dismissible fade show" role="alert">
-              <i class="far fa-check-circle"></i> Data berhasil diperbarui.
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            if($date_timestamp < $tgl_survei){
+              $this->session->set_flashdata('message', '<div id="message" class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="far fa-times-circle"></i> Tanggal installasi tidak valid!<button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
               </button>
               </div>');
-            redirect('survei');  
+              redirect('survei');
+            }else{
+              # Proses Foto
+              $foto = $_FILES['foto']['name'];
+              $files = $_FILES;
+      
+              $new_name = 'survei_'.date("Y-m-d(h-i-sa)");
+              $config['file_name'] = $new_name;
+              $config['allowed_types'] = 'gif|jpg|png|jpeg';
+              $config['max_size']      = '5120';
+              $config['upload_path']   = 'assets/images/survei';
+              $this->load->library('upload', $config);
+              
+              foreach($foto as $row => $name){
+                $_FILES['foto']['name'] = $files['foto']['name'][$row];
+                $_FILES['foto']['type'] = $files['foto']['type'][$row];
+                $_FILES['foto']['tmp_name'] = $files['foto']['tmp_name'][$row];
+                $_FILES['foto']['error'] = $files['foto']['error'][$row];
+                $_FILES['foto']['size'] = $files['foto']['size'][$row];    
+      
+                $this->upload->initialize($config);
+                $this->upload->do_upload('foto');
+                $dataInfo[] = $this->upload->data('file_name');
+              }
+      
+              $image_name = substr($dataInfo[0], 7, 22);
+      
+              $data_images = [
+                'id' => '',
+                'type' => 'Survei',
+                'name' => $image_name,
+              ];
+      
+              $this->main->insert($data_images,'images');
+              
+              $images_where = ['name' => $image_name ];
+              $image = $this->main->getWhere('images',$images_where)->result_array();
+              $image_id = $image[0]['id'];
+      
+              foreach($dataInfo as $row => $data){
+                $data_images_detail = [
+                  "id_images" => $image_id,
+                  "path" => "assets/images/survei/",
+                  "name" => $data,
+                ];
+                $this->main->insert($data_images_detail,'images_detail');
+              }
+              # Proses Foto
+
+              # Proses Survei
+              $survei_where = ['id' => $id];
+              $survei_date_selesai = date('Y-m-d H:i:s');
+              $data_survei = [
+                "selesai" => $survei_date_selesai,
+                "id_photos" => $image_id,
+                "catatan" => htmlspecialchars($this->input->post('catatan', true)),
+                "status" => "Selesai",
+              ];
+              $this->main->update($survei_where,$data_survei,'survei');
+              # Proses Survei
+
+              # Proses Installasi
+              $user = $this->session->userdata('id_user');
+
+              $data = [
+                "id_user" => htmlspecialchars($user),
+                "id_survei" => htmlspecialchars($id),
+                "tgl_installasi" => htmlspecialchars($tgl_installasi),
+                "id_alat" => htmlspecialchars($this->input->post('alat')),
+                "status" => "Belum Dikerjakan"
+              ];
+              
+              $this->main->insert($data,'installasi');
+              # Proses Installasi
+              
+              # Update Bahan->id_installasi
+              $installasi = $this->main->getWhere('installasi',$bahan_where)->result_array();
+              $id_installasi = $installasi[0]['id'];
+
+              $where_survei = ["id_survei" => $id_installasi];
+              $data_bahan = ["id_installasi" => $id_installasi];
+              $this->main->update($where_survei,$data_bahan,'bahan');
+              # Update Bahan->id_installasi
+
+              # Update User OFF JOB
+              $id_user = $this->session->userdata('id_user');
+              $where_user = ['id'=>$id_user];
+              $data_user = [ "status_teknisi" => 'OFF JOB'];
+              $this->main->update($where_user,$data_user,'user');
+              # Update User OFF JOB
+
+              $this->session->set_flashdata('message', '<div id="message" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="far fa-check-circle"></i> Data berhasil diperbarui.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+                </div>');
+              redirect('survei');  
+            }
           } elseif ($date_timestamp < $today_start) {
             $this->session->set_flashdata('message', '<div id="message" class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="far fa-times-circle"></i> Tanggal installasi tidak valid!<button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -229,44 +244,66 @@ class Survei extends CI_Controller{
       }elseif($this->input->post('simpan_jadwal_installasi') == 'on'){
         $today_start = strtotime('today');
         $today_end = strtotime('tomorrow');
-        $date = $this->input->post('jadwal_installasi');
+        $date = $this->input->post('jadwal_installasi_admin');
 
         $date_timestamp = strtotime($date);
 
         if ($date_timestamp >= $today_end) {
-          $where = ['email' => $this->session->userdata('email') ];
-          $user = $this->main->getWhere('user',$where)->result_array();
+          $where_survei = ['id' => $this->input->post('id_survei')];
+          $survei = $this->main->getWhere('survei', $where_survei)->result_array();
+          $tgl_survei = strtotime($survei[0]['tgl_survei']);
 
-          $data = [
-            "id_user" => htmlspecialchars($user[0]['id']),
-            "id_survei" => htmlspecialchars($this->input->post('id_survei', true)),
-            "tgl_installasi" => htmlspecialchars($date),
-            "status" => "Belum Dikerjakan"
-          ];
-        
-          $this->main->insert($data,'installasi');
-          
-          $id=$this->input->post('id_survei');
-          $where_survei = ['id' => $id];
-          $data_survei = [
-            "status" => 'Diterima'
-          ];
-          $this->main->update($where_survei,$data_survei,'survei');
-
-          $id_permintaan=$this->input->post('id_permintaan');
-          $where_permintaan = ['id' => $id_permintaan];
-          $data_permintaan = [
-            "status" => 'Installasi'
-          ];
-          $this->main->update($where_permintaan,$data_permintaan,'permintaan_installasi');
-
-          $this->session->set_flashdata('message', '<div id="message" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="far fa-check-circle"></i> Data berhasil disimpan.
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          if($date_timestamp < $tgl_survei){
+            $this->session->set_flashdata('message', '<div id="message" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="far fa-times-circle"></i> Tanggal installasi tidak valid!<button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
             </div>');
-          redirect('survei');
+            redirect('survei');
+          }else{
+            # Installasi
+            $where_installasi = ['id_survei' => $this->input->post('id_survei')];
+            $data_installasi = [
+              "id_user" => htmlspecialchars($this->input->post('teknisi')),
+              "tgl_installasi" => htmlspecialchars($date)
+            ];
+          
+            $this->main->update($where_installasi, $data_installasi,'installasi');
+            # Installasi
+
+            # Update Survei->Diterima
+            $id_survei=$this->input->post('id_survei');
+            $where_survei = ['id' => $id_survei];
+            $data_survei = [
+              "status" => 'Diterima'
+            ];
+            $this->main->update($where_survei,$data_survei,'survei');
+            # Update Survei->Diterima
+            
+            # Update Permintaan->Installasi
+            $id_permintaan=$this->input->post('id_permintaan');
+            $where_permintaan = ['id' => $id_permintaan];
+            $data_permintaan = [
+              "status" => 'Installasi'
+            ];
+            $this->main->update($where_permintaan,$data_permintaan,'permintaan_installasi');
+            # Update Permintaan->Installasi
+
+            # Update User OFF JOB
+            // $id_user = $this->input->post('teknisi');
+            // $where_user = ['id'=>$id_user];
+            // $data_user = [ "status_teknisi" => 'OFF JOB'];
+            // $this->main->update($where_user,$data_user,'user');
+            # Update User OFF JOB
+
+            $this->session->set_flashdata('message', '<div id="message" class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="far fa-check-circle"></i> Data berhasil disimpan.
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+              </div>');
+            redirect('survei');
+          }
         } elseif ($date_timestamp < $today_start) {
           $this->session->set_flashdata('message', '<div id="message" class="alert alert-danger alert-dismissible fade show" role="alert">
           <i class="far fa-times-circle"></i> Tanggal survei tidak valid!<button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -275,7 +312,12 @@ class Survei extends CI_Controller{
           </div>');
           redirect('survei');
         } else {
-          echo 'today';
+          $this->session->set_flashdata('message', '<div id="message" class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="far fa-times-circle"></i> Tanggal survei tidak valid!<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+          </div>');
+          redirect('survei');
         }
       }
     }
@@ -420,5 +462,39 @@ class Survei extends CI_Controller{
 		}else{
       redirect('survei');
 		}
+  }
+
+  function getDataInstallasi(){
+		if($this->input->post('id')){
+			$id=$this->input->post('id');
+			$where = ['id_survei' => $id ];
+			$data = $this->main->getWhere('installasi',$where)->result();
+
+			echo json_encode($data);
+		}else{
+      redirect('survei');
+		}
+  }
+
+  function cancel(){
+    if($this->input->post('id_survei')){
+      $where_permintaan = ['id' => $this->input->post('id_permintaan')];
+      $where_survei = ['id' => $this->input->post('id_survei')];
+      $where_installasi = ['id_survei' => $this->input->post('id_survei')];
+
+      $data = ["status" => "Cancel"];
+      $this->main->update($where_survei,$data,'permintaan_installasi');
+      $this->main->update($where_survei,$data,'survei');
+      $this->main->update($where_survei,$data,'installasi');
+
+      $this->session->set_flashdata('message', '<div id="message" class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="far fa-check-circle"></i> Jadwal installasi berhasil dibatalkan.
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+              </div>');
+    }else{
+      redirect('survei');
+    }
   }
 }
