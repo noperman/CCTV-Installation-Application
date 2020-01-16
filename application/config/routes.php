@@ -54,3 +54,5 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['survei/hasil'] = 'survei';
 $route['survei/hasil/:any'] = 'auth';
+$route['installasi/hasil'] = 'installasi';
+$route['installasi/hasil/:any'] = 'auth';

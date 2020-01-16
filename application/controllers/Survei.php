@@ -9,6 +9,7 @@ class Survei extends CI_Controller{
 		$this->load->model('Model_', 'main');
 		$this->load->model('Model_survei', 'survei');
 		$this->load->model('Model_master', 'master');
+		$this->load->model('Model_images', 'images');
     $this->load->library("pagination");
     date_default_timezone_set('Asia/Jakarta');
   }
@@ -48,9 +49,13 @@ class Survei extends CI_Controller{
       ]);
       $this->template->set('menu',$this->main->Menu($this->session->userdata('level_user')));
 
+      $getCount = $this->survei->get_count_admin();
+      if($this->session->userdata('level_user') !== "1" ){
+        $getCount = $this->survei->get_count($this->session->userdata('id_user'));
+      }
       $config = array();
       $config["base_url"] = base_url() . "survei/index/";
-      $config["total_rows"] = $this->survei->get_count();
+      $config["total_rows"] = $getCount;
       $config["per_page"] = 8;
       $config["uri_segment"] = 3;
       $config['num_links'] = 3;
@@ -195,7 +200,7 @@ class Survei extends CI_Controller{
                 "id_survei" => htmlspecialchars($id),
                 "tgl_installasi" => htmlspecialchars($tgl_installasi),
                 "id_alat" => htmlspecialchars($this->input->post('alat')),
-                "status" => "Belum Dikerjakan"
+                "status" => "Belum ACC"
               ];
               
               $this->main->insert($data,'installasi');
@@ -265,7 +270,8 @@ class Survei extends CI_Controller{
             $where_installasi = ['id_survei' => $this->input->post('id_survei')];
             $data_installasi = [
               "id_user" => htmlspecialchars($this->input->post('teknisi')),
-              "tgl_installasi" => htmlspecialchars($date)
+              "tgl_installasi" => htmlspecialchars($date),
+              "status" => "Belum Dikerjakan"
             ];
           
             $this->main->update($where_installasi, $data_installasi,'installasi');
@@ -324,7 +330,6 @@ class Survei extends CI_Controller{
   }
 
   public function hasil($survei,$images){
-    echo $this->input->post('survei');
     $this->template->set('title','Hasil Survei');
     $this->template->set('breadcrumb', [
       ['link' => base_url(), 'text' => 'Home', 'active' => false],
@@ -344,7 +349,7 @@ class Survei extends CI_Controller{
     
     $config = array();
     $config["base_url"] = base_url() . "survei/hasil/".$survei."/".$images."/";
-    $config["total_rows"] = $this->survei->get_countImages($images);
+    $config["total_rows"] = $this->images->get_countImages($images);
     $config["per_page"] = 8;
     $config["uri_segment"] = 5;
     $config['num_links'] = 3;
@@ -381,7 +386,7 @@ class Survei extends CI_Controller{
 
     $page = ($this->uri->segment($config["uri_segment"])) ? $this->uri->segment($config["uri_segment"]) : 0;
     $data["links"] = $this->pagination->create_links();
-    $data['images'] = $this->survei->getAllImagesSurvei($images,$config["per_page"], $page);
+    $data['images'] = $this->images->getAllImages($images,$config["per_page"], $page);
     $data['hasil_survei'] = $this->survei->getHasilSurvei($survei);
     
     $this->template->load('template/base','survei/hasil', $data);

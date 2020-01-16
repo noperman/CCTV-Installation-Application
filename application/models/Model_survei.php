@@ -34,24 +34,12 @@ class Model_survei extends CI_Model {
 		// return $head;
 	}
 	
-	public function get_count() {
+	public function get_count_admin() {
 		return $this->db->count_all($this->table);
 	}
 
-	public function getAllImagesSurvei($id_images,$limit,$start){
-		return $this->db->select('images_detail.path,images_detail.name')
-									->from('images')
-									->join('images_detail', 'images_detail.id_images = images.id')
-									->where('id_images', $id_images)
-									->limit($limit,$start)
-									->get()->result_array();
-	}
-
-	public function get_countImages($id_images) {
-		return $this->db->select('*')
-									->from('images_detail')
-									->where('id_images', $id_images)
-									->get()->num_rows();
+	public function get_count($user) {
+		return $this->db->select('*')->from('survei')->where('id_user',$user)->get()->num_rows();
 	}
 
 	public function dataBahan($id){

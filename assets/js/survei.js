@@ -29,8 +29,11 @@ function selected(){
 
 function unsetformSurvei(){
   $("[name='id']").val('')
+  $("[name='jadwal_installasi']").val('')
+  $("[name='alat']").val('')
   $("[name='catatan']").val('')
   $("[name='foto']").val('')
+  $('#small_alat').html('')
 }
 
 function hideformSurvei(){
@@ -58,7 +61,7 @@ function setformJadwalInstallasi(val,val2){
 function unsetformJadwalInstallasi(){
   $("[name='id_survei']").val('')
   $("[name='id_permintaan']").val('')
-  $("[name='jadwal_installasi']").val('')
+  $("[name='jadwal_installasi_admin']").val('')
   $('[name="teknisi"]').val('')
 }
 
