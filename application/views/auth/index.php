@@ -34,7 +34,7 @@
         </div>
         <div class="row">
           <div class="col-6">
-            <a class="btn btn-primary btn-block" href="<?=base_url()?>auth/register">Register</a>
+            <!-- <a class="btn btn-primary btn-block" href="<?=base_url()?>auth/register">Register</a> -->
           </div>
           <!-- /.col -->
           <div class="col-6">
