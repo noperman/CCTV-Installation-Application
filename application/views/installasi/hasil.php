@@ -4,7 +4,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Hasil Survei</h3>
+          <h3 class="card-title">Hasil Instalasi</h3>
         </div>
         <div class="card-body">
           <h1 class="font-weight-light text-center text-lg-left mb-0">Gallery Installasi</h1>

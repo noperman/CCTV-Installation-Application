@@ -169,7 +169,17 @@ class Installasi extends CI_Controller {
 		if($this->input->post('id')){
 			$id = $this->input->post('id');
 			$where = ['id' => $id];
-			$this->main->delete($where,'permintaan_installasi');
+      $this->main->delete($where,'permintaan_installasi');
+
+      # Update User OFF JOB
+      $where_survei = ['id_permintaan' => $id];
+      $id_teknisi = $this->main->getWhere('survei', $where_survei)->result_array();
+      $teknisi = $id_teknisi[0]['id_user'];
+      $where_user = ['id'=>$teknisi];
+      $data_user = [ "status_teknisi" => 'OFF JOB'];
+      $this->main->update($where_user,$data_user,'user');
+      # Update User OFF JOB
+
 			$this->session->set_flashdata('message', '<div id="message" class="alert alert-warning alert-dismissible fade show" role="alert">
                 <i class="far fa-check-circle"></i> Data telah dihapus.
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">

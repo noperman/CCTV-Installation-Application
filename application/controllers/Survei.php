@@ -488,9 +488,9 @@ class Survei extends CI_Controller{
       $where_installasi = ['id_survei' => $this->input->post('id_survei')];
 
       $data = ["status" => "Cancel"];
-      $this->main->update($where_survei,$data,'permintaan_installasi');
+      $this->main->update($where_permintaan,$data,'permintaan_installasi');
       $this->main->update($where_survei,$data,'survei');
-      $this->main->update($where_survei,$data,'installasi');
+      $this->main->update($where_installasi,$data,'installasi');
 
       $this->session->set_flashdata('message', '<div id="message" class="alert alert-success alert-dismissible fade show" role="alert">
               <i class="far fa-check-circle"></i> Jadwal installasi berhasil dibatalkan.

@@ -208,7 +208,7 @@ function Cancel(val1,val2){
       data:{id_survei : val1, id_permintaan : val2},
       url:baseurl+'survei/cancel',
       success:function(){
-        window.location.replace('survei');
+        window.location.replace('survei')
       }
     });
   }

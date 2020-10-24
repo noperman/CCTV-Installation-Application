@@ -1,6 +1,6 @@
 <div class="register-box">
   <div class="register-logo">
-    <a href="<?=base_url()?>"><b>Vision</b>Star</a>
+    <a href="<?=base_url()?>"><b>CCTV</b>Installation</a>
   </div>
 
   <div class="card">

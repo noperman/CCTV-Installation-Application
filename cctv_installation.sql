@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.1
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 15, 2020 at 02:34 AM
--- Server version: 10.4.8-MariaDB
--- PHP Version: 7.3.10
+-- Generation Time: Oct 24, 2020 at 10:52 AM
+-- Server version: 10.4.14-MariaDB
+-- PHP Version: 7.2.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -125,14 +124,6 @@ CREATE TABLE `installasi` (
   `status` enum('Belum Dikerjakan','Proses Installasi','Selesai') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `installasi`
---
-
-INSERT INTO `installasi` (`id`, `id_user`, `id_survei`, `tgl_installasi`, `id_alat`, `foto`, `catatan`, `status`) VALUES
-(1, 4, 1, '2020-01-16', 1, '', '', 'Belum Dikerjakan'),
-(2, 4, 2, '2020-01-17', 1, '', '', 'Belum Dikerjakan');
-
 -- --------------------------------------------------------
 
 --
@@ -241,14 +232,6 @@ CREATE TABLE `permintaan_installasi` (
   `status` enum('Permintaan','Survei','Installasi','Selesai') NOT NULL DEFAULT 'Permintaan'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `permintaan_installasi`
---
-
-INSERT INTO `permintaan_installasi` (`id`, `id_user`, `nama`, `instansi`, `jk`, `no_telp`, `alamat`, `keterangan`, `tgl_permintaan`, `status`) VALUES
-(1, 1, 'nana', 'visionstar', 'Perempuan', '0000', 'Jl Visionstar', 'Pasang CCTV', '2020-01-14', 'Survei'),
-(2, 1, 'bejo', 'visionstar', 'Laki-laki', '0000', 'tes', 'tes', '2020-01-14', 'Survei');
-
 -- --------------------------------------------------------
 
 --
@@ -298,14 +281,6 @@ CREATE TABLE `survei` (
   `status` enum('Ditolak','Dimulai','Selesai','Diterima') NOT NULL DEFAULT 'Ditolak'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `survei`
---
-
-INSERT INTO `survei` (`id`, `id_user`, `id_permintaan`, `tgl_survei`, `mulai`, `selesai`, `id_photos`, `catatan`, `status`) VALUES
-(1, 4, 1, '2020-01-15', '2020-01-14 14:17:21', '2020-01-14 14:28:39', 1, 'Tambah Alat Tangga', 'Selesai'),
-(2, 4, 2, '2020-01-16', '2020-01-14 22:27:46', '2020-01-14 22:28:39', 2, 'oke', 'Selesai');
-
 -- --------------------------------------------------------
 
 --
@@ -330,15 +305,9 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `id_level`, `fullname`, `password`, `foto`, `email`, `no_t`, `alamat`, `status`, `status_teknisi`) VALUES
-(1, 1, 'Cindy Winatha', '$2y$10$TfWCKQgh.34cd8nMnEuGLOE5JWtM0hI5nARC/XLxbuB92EEnIa0TS', 'default_avatar.png', 'administrator@visionstar.com', '0000', 'Jl vision starr', 1, 'OFF JOB'),
-(4, 2, 'Dicky nigata', '$2y$10$4JRHsEdJ.Wwz5.rTK.DWpOQPYl/iXnL05JG1RNBGMrwFyWdLQ2EDq', 'default_avatar.png', 'teknisi@visionstar.com', '0000', 'Jl Vision Star', 1, 'OFF JOB'),
-(5, 2, 'Juanda Herman', '$2y$10$BGWS7EWJl66gO5IZXlpsBuiu5XrOvkgE3MnRQ613LHaRp2o8D54pW', 'default_avatar.png', 'administrator@visionstar.comm', '0000', 'km 14', 1, 'OFF JOB'),
-(6, 2, 'Aan', '$2y$10$c.a8TVsLi89Hih.nIHmLj.dkrKHE.1QB9U0aWig34WlAVgsMwq3sy', 'default_avatar.png', 'ann@gmail.com', '0000', 'kayu agung', 1, 'OFF JOB'),
-(7, 2, 'Edi', '$2y$10$Dr0UeC43yPEjcEP.YT71/ebw.ZbjkcvjgJjL7RbK0JNt5fVpPJFXi', 'default_avatar.png', 'edi@gmail.com', '0000', 'pasar kuto', 1, 'OFF JOB'),
-(8, 2, 'Rizal', '$2y$10$OioitAhG/qSMxJCb71SZqeaeCA6Nc0Uq8.HR..suiBc6zFm5ARPgu', 'default_avatar.png', 'rizal@gamil.com', '0000', 'km 14', 1, 'OFF JOB'),
-(9, 2, 'yono', '$2y$10$//35n/E7mcPIldl.DBZ4c.3IFP4bmrgE4U3.nidUVrCMcMqWeKzhG', 'default_avatar.png', 'marwan@gmail.com', '0000', 'kenten laut', 1, 'OFF JOB'),
-(10, 2, 'ismoyo', '$2y$10$SArGAwGL4QFWNhrNx0ryluL6mnAS2Kf4JYoLbLC4SQudH/auwrALy', 'default_avatar.png', 'ismoyol@gamil.com', '0000', 'JL PD.AM Tirta musi', 1, 'OFF JOB'),
-(11, 2, 'chandra', '$2y$10$/qRcVpqGCe/HwtxmTNq5/OIVaKP1Arj.Y5PqnVmOPMHP6BQACRRe.', 'default_avatar.png', 'chandra@gmail.com', '0000', 'cinde welan', 1, 'OFF JOB');
+(1, 1, 'Cindy Winatha', '$2y$10$TfWCKQgh.34cd8nMnEuGLOE5JWtM0hI5nARC/XLxbuB92EEnIa0TS', 'default_avatar.png', 'administrator@cctv.com', '0000', 'Jl cctv installation', 1, 'OFF JOB'),
+(6, 2, 'Aan', '$2y$10$c.a8TVsLi89Hih.nIHmLj.dkrKHE.1QB9U0aWig34WlAVgsMwq3sy', 'default_avatar.png', 'ann@cctv.com', '0000', 'kayu agung', 1, 'OFF JOB'),
+(7, 2, 'Edi', '$2y$10$Dr0UeC43yPEjcEP.YT71/ebw.ZbjkcvjgJjL7RbK0JNt5fVpPJFXi', 'default_avatar.png', 'edi@cctv.com', '0000', 'pasar kuto', 1, 'OFF JOB');
 
 -- --------------------------------------------------------
 
@@ -360,11 +329,9 @@ CREATE TABLE `user_access_menu` (
 INSERT INTO `user_access_menu` (`id`, `id_level`, `id_menu`, `id_submenu`) VALUES
 (2, 1, 1, 1),
 (3, 1, 2, 2),
-(4, 1, 2, 3),
 (5, 1, 3, 4),
 (6, 1, 3, 5),
 (8, 1, 4, 9),
-(9, 1, 5, 6),
 (10, 1, 5, 7),
 (11, 1, 4, 10),
 (12, 2, 4, 9);

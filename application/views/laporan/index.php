@@ -36,7 +36,7 @@
           <table id="tbl-laporan" class="table table-sm table-bordered table-hover table-striped" style="font-size: 10pt;padding:0px 5px;">
             <thead>
               <tr>
-                <th style="width: 10px">#</th>
+                <!-- <th style="width: 10px">#</th> -->
                 <th>TGL INSTALLASI</th>
                 <th>NAMA</th>
                 <th>INSTANSI</th>
@@ -48,7 +48,7 @@
             </thead>
             <tfoot>
               <tr>
-                <th style="width: 10px">#</th>
+                <!-- <th style="width: 10px">#</th> -->
                 <th>TGL INSTALLASI</th>
                 <th>NAMA</th>
                 <th>INSTANSI</th>

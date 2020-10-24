@@ -1,5 +1,5 @@
 function mulaiInstallasi(id){
-  var tanya = confirm('Apakah anda yakin akan memulai survei?');
+  var tanya = confirm('Apakah anda yakin akan memulai Instalasi?');
   
   if(tanya){
     $.ajax({

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Vision Star | <?=$title?></title>
+  <title>CCTV Installation | <?=$title?></title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -61,7 +61,7 @@
       <!-- <a href="<?=base_url()?>" class="brand-link">
         <img src="<?=base_url()?>assets/images/logo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
             style="opacity: .8">
-        <span class="brand-text font-weight-light">VisionStar</span>
+        <span class="brand-text font-weight-light">CCTVInstallation</span>
       </a> -->
 
       <!-- Sidebar -->
@@ -175,7 +175,7 @@
 
     <!-- Main Footer -->
     <footer class="main-footer">
-      <strong>Copyright &copy; 2020 <a href="<?=base_url()?>">VisionStar</a>.</strong>
+      <strong>Copyright &copy; 2020 <a href="<?=base_url()?>">CCTVInstallation</a>.</strong>
       All rights reserved.
       <div class="float-right d-none d-sm-inline-block">
         <b>Version</b> 0.0.1

@@ -4,6 +4,7 @@ $(function(){
 	$('button.dt-button span').text('Export Excel')
 });
 
+// var i = 1;
 const tbl_laporan = $('#tbl-laporan').DataTable({
   dom: 'Blftip',
   buttons: [
@@ -19,7 +20,7 @@ const tbl_laporan = $('#tbl-laporan').DataTable({
   info: false,
   autoWidth: false,
   columns : [
-    { "data" : "id" },
+    // { "data" : "id" },
     { "data" : "tgl_installasi"},
     { "data" : "nama" },
     { "data" : "instansi", className: "td-center" },
